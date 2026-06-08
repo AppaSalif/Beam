@@ -1,7 +1,6 @@
 import sys
 import os
 
-# Ajoutez le chemin absolu vers PyElastica
 sys.path.insert(0, os.path.expanduser('~/PyElastica'))
 
 import numpy as np
@@ -14,21 +13,20 @@ class HorizontalRodSimulator(BaseSystemCollection, Constraints, Forcing, Damping
     pass
 
 
-# Créer le simulateur
+# Le simulateur
 rod_sim = HorizontalRodSimulator()
 
-# Vos paramètres spécifiques
+# Paramètres de la simu
 n_elements = 20  # nombre de sections
-base_length = 3.0  # longueur totale de 3 mètres
-base_radius = 0.3  # rayon de 0.3 mètre
-total_mass = 0.5  # masse totale de 0.5 kg
-youngs_modulus = 1e4  # module d'Young de 10000 Pa
-poisson_ratio = 0.38  # coefficient de Poisson
+base_length = 3.0  # longueur totale
+base_radius = 0.3  # rayon de la tige
+total_mass = 0.5  # masse total
+youngs_modulus = 1e4  # Young Modulus
+poisson_ratio = 0.38  # Poisson Ratio
 
 # Calcul de la densité volumique à partir de la masse et du volume
-# Volume = π * r² * L (cylindre)
 volume = np.pi * base_radius**2 * base_length
-density = total_mass / volume  # masse volumique en kg/m³
+density = total_mass / volume  # masse volumique
 
 # Calcul du module de cisaillement à partir du module d'Young et du coefficient de Poisson
 shear_modulus = youngs_modulus / (2.0 * (1.0 + poisson_ratio))
