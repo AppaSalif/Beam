@@ -8,12 +8,12 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 
 stiffness_param: float = 1e10
-v_damping_param: float =  3e-1  # Damping parameter for dynamics
+v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
 beam_mass: float = 0.5
-nb_section: int = 20
+nb_section: int = 500
 beam_length: float = 5
-beam_radius: float = 0.03
-youngModulus: float = 1e4
+beam_radius: float = 0.3
+youngModulus: float = 1e3
 poissonRatio: float = 0.38
 
 def createScene(root):
@@ -39,7 +39,7 @@ def createScene(root):
 
     # Add gravity
     root.gravity = [0, -9.81, 0]  # Add gravity!
-    root.dt = 1e-4
+    # root.dt = 1e-4
 
     # Configure time integration and solver
 
@@ -49,7 +49,7 @@ def createScene(root):
                      firstOrder="0", 
                      rayleighMass=0, 
                      rayleighStiffness=0, 
-                    # vdamping=v_damping_param
+                     vdamping=v_damping_param
                      )
     
     solver.addObject("CGLinearSolver", iterations=1000, tolerance=1e-15, threshold=1e-15)
@@ -75,16 +75,16 @@ def createScene(root):
         showObject=True,
         showObjectScale="0.1",
     )
-    # rigid_base.addObject(
-    #     "RestShapeSpringsForceField",
-    #     name="spring",
-    #     stiffness=stiffness_param,
-    #     angularStiffness=stiffness_param,
-    #     external_points="0",
-    #     mstate="@cosserat_base_mo",
-    #     points="0",
-    #     template="Rigid3d",
-    # )
+    rigid_base.addObject(
+        "RestShapeSpringsForceField",
+        name="spring",
+        stiffness=stiffness_param,
+        angularStiffness=stiffness_param,
+        external_points="0",
+        mstate="@cosserat_base_mo",
+        points="0",
+        template="Rigid3d",
+    )
     
     ## frame node
     frame_node = solver.addChild("frame_node")
@@ -97,7 +97,7 @@ def createScene(root):
         showObject=1,
         showObjectScale=0.8,
     )
-    # frame_node.addObject("FixedProjectiveConstraint", indices="0 1")
+    frame_node.addObject("FixedProjectiveConstraint", indices="0 1")
     
     frame_node.addObject("UniformMass", totalMass=beam_mass)
 
@@ -119,7 +119,6 @@ def createScene(root):
         youngModulus=youngModulus,
         poissonRatio=poissonRatio,
     )
-
 
     strain_node.addObject(
     "Frames2StrainCosseratMapping", 

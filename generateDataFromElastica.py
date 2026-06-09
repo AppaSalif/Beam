@@ -17,11 +17,11 @@ class HorizontalRodSimulator(BaseSystemCollection, Constraints, Forcing, Damping
 # ============================================
 rod_sim = HorizontalRodSimulator()
 
-n_elements = 20  
+n_elements = 100  
 base_length = 5.0  
-base_radius = 0.03  
+base_radius = 0.3  
 total_mass = 0.5  
-youngs_modulus = 1e4
+youngs_modulus = 1e3
 poisson_ratio = 0.38  
 
 volume = np.pi * base_radius**2 * base_length
@@ -44,20 +44,20 @@ rod_sim.append(rod)
 
 # Forces, limites et amortissement
 rod_sim.add_forcing_to(rod).using(GravityForces, acc_gravity=np.array([0.0, -9.81, 0.0]))
-# rod_sim.constrain(rod).using(OneEndFixedBC, constrained_position_idx=(0,), constrained_director_idx=(0,))
-# rod_sim.dampen(rod).using(AnalyticalLinearDamper, uniform_damping_constant=0.3, time_step=1e-4)
+rod_sim.constrain(rod).using(OneEndFixedBC, constrained_position_idx=(0,), constrained_director_idx=(0,))
+rod_sim.dampen(rod).using(AnalyticalLinearDamper, uniform_damping_constant=10.0, time_step=1e-4)
 
 rod_sim.finalize()
 
 # Configuration temporelle
-final_time = 10.0  
+final_time = 50.0  
 time_step = 1e-4
 total_steps = int(final_time / time_step)
 
 timestepper = PositionVerlet()
 do_step, stages_and_updates = extend_stepper_interface(timestepper, rod_sim)
 
-save_interval = 200  
+save_interval = 100  
 
 # ============================================
 # BOUCLE DE SIMULATION ET EXPORT TEXTE
