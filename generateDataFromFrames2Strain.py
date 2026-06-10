@@ -10,7 +10,7 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
 beam_mass: float = 0.5
-nb_section: int = 500
+nb_section: int = 6
 beam_length: float = 5
 beam_radius: float = 0.3
 youngModulus: float = 1e3
@@ -63,7 +63,7 @@ def createScene(root):
     beam_geometry = CosseratGeometry(beam_geometry_params)
 
     # On génère la liste des indices que l'on veut monitorer (0, 1, 2... 10)
-    indices_str = "   ".join([str(i) for i in range(nb_section + 1)])
+    indices_str = "   ".join([str(i) for i in range(nb_section)])
 
     ## base node
     rigid_base = solver.addChild("rigid_base")
@@ -97,7 +97,7 @@ def createScene(root):
         showObject=1,
         showObjectScale=0.8,
     )
-    frame_node.addObject("FixedProjectiveConstraint", indices="0 1")
+    frame_node.addObject("FixedProjectiveConstraint", indices="0")
     
     frame_node.addObject("UniformMass", totalMass=beam_mass)
 
@@ -134,7 +134,7 @@ def createScene(root):
     )
 
 
-    frame_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Rigid3d", 
+    strain_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Vec6d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
                            ExportForces=False, fileName="monitor_frames2strain")

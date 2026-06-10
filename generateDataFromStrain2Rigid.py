@@ -10,7 +10,7 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
 beam_mass: float = 0.5
-nb_section: int = 500
+nb_section: int = 6
 beam_length: float = 5
 beam_radius: float = 0.3
 youngModulus: float = 1e3
@@ -120,7 +120,7 @@ def createScene(root):
         showObject=1,
         showObjectScale=0.8,
     )
-    frame_node.addObject("FixedProjectiveConstraint", indices="0 1")
+    frame_node.addObject("FixedProjectiveConstraint", indices="0")
     
     frame_node.addObject("UniformMass", totalMass=beam_mass)
 
