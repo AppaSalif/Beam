@@ -17,7 +17,7 @@ class HorizontalRodSimulator(BaseSystemCollection, Constraints, Forcing, Damping
 # ============================================
 rod_sim = HorizontalRodSimulator()
 
-n_elements = 100  
+n_elements = 7 
 base_length = 5.0  
 base_radius = 0.3  
 total_mass = 0.5  
@@ -50,8 +50,8 @@ rod_sim.dampen(rod).using(AnalyticalLinearDamper, uniform_damping_constant=10.0,
 rod_sim.finalize()
 
 # Configuration temporelle
-final_time = 50.0  
-time_step = 1e-4
+final_time = 20.0  
+time_step = 1e-3
 total_steps = int(final_time / time_step)
 
 timestepper = PositionVerlet()
