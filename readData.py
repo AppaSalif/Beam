@@ -43,13 +43,13 @@ def lire_donnees_tige(chemin_fichier):
 ########## OK super fonctionnel ##########
 
 
-def lire_monitor_sofa(fichier_sofa, intervalle=100, nb_section=10):
+def lire_monitor_sofa(fichier_sofa, intervalle=200, nb_section=10, beam_length=5.):
     """
     Lit le fichier SOFA et extrait les données en respectant le même intervalle
     que ton save_interval de PyElastica (50).
     """
     data = []
-    data.append({'time': 0.0, 'pos': initialiser_position_t0(nb_section+1)})
+    data.append({'time': 0.0, 'pos': initialiser_position_t0(nb_section+1, beam_length)})
 
     compteur_data = 1
     with open(fichier_sofa, 'r') as f:
@@ -78,8 +78,8 @@ def lire_monitor_sofa(fichier_sofa, intervalle=100, nb_section=10):
             
     return data    
 
-def initialiser_position_t0(nb_nodes):
-    nodes = np.linspace(0, 5, nb_nodes)
+def initialiser_position_t0(nb_nodes, beam_length):
+    nodes = np.linspace(0, beam_length, nb_nodes)
     pos_t0 = np.array([[x, 0.0, 0.0] for x in nodes])
     return pos_t0    
 

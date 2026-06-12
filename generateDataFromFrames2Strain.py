@@ -9,11 +9,11 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
-beam_mass: float = 0.5
-nb_section: int = 7
-beam_length: float = 5
-beam_radius: float = 0.3
-youngModulus: float = 1e3
+beam_mass: float = 0.05
+nb_section: int = 200
+beam_length: float = 0.5
+beam_radius: float = 0.03
+youngModulus: float = 1e4
 poissonRatio: float = 0.38
 
 def createScene(root):
@@ -39,7 +39,7 @@ def createScene(root):
 
     # Add gravity
     root.gravity = [0, -9.81, 0]  # Add gravity!
-    root.dt = 1e-3
+    root.dt = 1e-2
 
     # Configure time integration and solver
 
@@ -63,7 +63,7 @@ def createScene(root):
     beam_geometry = CosseratGeometry(beam_geometry_params)
 
     # On génère la liste des indices que l'on veut monitorer (0, 1, 2... 10)
-    indices_str = "   ".join([str(i) for i in range(nb_section)])
+    indices_str = "   ".join([str(i) for i in range(nb_section + 1)])
 
     ## base node
     rigid_base = solver.addChild("rigid_base")
@@ -97,7 +97,7 @@ def createScene(root):
         showObject=1,
         showObjectScale=0.8,
     )
-    frame_node.addObject("FixedProjectiveConstraint", indices="0")
+    frame_node.addObject("FixedProjectiveConstraint", indices="0 1")
     
     frame_node.addObject("UniformMass", totalMass=beam_mass)
 

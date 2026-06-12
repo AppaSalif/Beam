@@ -17,11 +17,11 @@ class HorizontalRodSimulator(BaseSystemCollection, Constraints, Forcing, Damping
 # ============================================
 rod_sim = HorizontalRodSimulator()
 
-n_elements = 7 
-base_length = 5.0  
-base_radius = 0.3  
-total_mass = 0.5  
-youngs_modulus = 1e3
+n_elements = 200
+base_length = 0.5 
+base_radius = 0.03  
+total_mass = 0.05  
+youngs_modulus = 1e4
 poisson_ratio = 0.38  
 
 volume = np.pi * base_radius**2 * base_length
@@ -51,13 +51,13 @@ rod_sim.finalize()
 
 # Configuration temporelle
 final_time = 20.0  
-time_step = 1e-3
+time_step = 1e-4
 total_steps = int(final_time / time_step)
 
 timestepper = PositionVerlet()
 do_step, stages_and_updates = extend_stepper_interface(timestepper, rod_sim)
 
-save_interval = 100  
+save_interval = 200  
 
 # ============================================
 # BOUCLE DE SIMULATION ET EXPORT TEXTE

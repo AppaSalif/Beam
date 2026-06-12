@@ -4,12 +4,12 @@ from matplotlib.animation import FuncAnimation
 
 from readData import lire_donnees_tige, lire_monitor_sofa
 
-base_length = 5.0  
-nb_section = 5
+base_length = 0.5  
+nb_section = 10
 
 donneesElastica = lire_donnees_tige("donnees_tige.txt")
-donneesFrames2Strain = lire_monitor_sofa("monitor_frames2strain_x.txt", nb_section=nb_section)
-donneesStrain2Rigid = lire_monitor_sofa("monitor_strain2rigid_x.txt", nb_section=nb_section)
+donneesFrames2Strain = lire_monitor_sofa("monitor_frames2strain_x.txt", nb_section=nb_section, beam_length=base_length)
+donneesStrain2Rigid = lire_monitor_sofa("monitor_strain2rigid_x.txt", nb_section=nb_section, beam_length=base_length)
 
 times = [d['time'] for d in donneesFrames2Strain]
 

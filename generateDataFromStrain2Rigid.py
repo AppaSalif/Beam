@@ -9,11 +9,11 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
-beam_mass: float = 0.5
-nb_section: int = 7
-beam_length: float = 5
-beam_radius: float = 0.3
-youngModulus: float = 1e3
+beam_mass: float = 0.05
+nb_section: int = 200
+beam_length: float = 0.5
+beam_radius: float = 0.03
+youngModulus: float = 1e4
 poissonRatio: float = 0.38
 
 def createScene(root):
@@ -39,7 +39,7 @@ def createScene(root):
 
     # Add gravity
     root.gravity = [0, -9.81, 0]  # Add gravity!
-    root.dt = 1e-3
+    root.dt = 1e-2
 
     # Configure time integration and solver
 
