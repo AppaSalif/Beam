@@ -65,13 +65,13 @@ times = [d['time'] for d in donneesFrames2Strain]
 # plt.show()    
 
 
-def calculer_erreur_normalisee(donnees1, donnees2):
+def calculer_erreur_normalisee(donnees1, donnees2, nb_section):
     erreurs = []
     for i in range(len(times)):
         if i >= len(donneesElastica) or i >= len(donneesFrames2Strain) or i >=len(donneesStrain2Rigid):
             return erreurs
 
-        pos1 = np.array([donnees1[i]['nodes'][n] for n in range(11)])
+        pos1 = np.array([donnees1[i]['nodes'][n] for n in range(nb_section+1)])
         pos2 = donnees2[i]['pos']
         # Calcul de la distance euclidienne moyenne entre les nœuds à l'instant t
         mse = np.linalg.norm(pos1 - pos2, axis=1)/ base_length
