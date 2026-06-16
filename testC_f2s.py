@@ -142,7 +142,7 @@ def createScene(root):
     frame_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Rigid3d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
-                           ExportForces=False, fileName="monitor_frames2strain")
+                           ExportForces=False, fileName="monitor_frames2strainC")
     
 
     return root

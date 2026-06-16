@@ -38,7 +38,7 @@ def createScene(root):
     )
     root.addObject("DefaultAnimationLoop")
 
-    root.dt = 1e-4
+    root.dt = 1e-2
 
     # Configure time integration and solver
 
@@ -51,7 +51,7 @@ def createScene(root):
                      vdamping=v_damping_param
                      )
     
-    solver.addObject("CGLinearSolver", iterations=1000, tolerance=1e-12, threshold=1e-12)
+    solver.addObject("SparseLDLSolver")
 
     beam_geometry_params = BeamGeometryParameters(
         beam_length=beam_length,
@@ -121,7 +121,7 @@ def createScene(root):
         showObjectScale=0.8,
     )
     
-    F_small = 1.0e-3
+    F_small = 1e-3
     frame_node.addObject("ConstantForceField", indices="10", forces=[0, -F_small, 0, 0, 0, 0])
 
     frame_node.addObject(
@@ -141,7 +141,7 @@ def createScene(root):
     frame_node.addObject("Monitor", name="Monitor_Strain2Rigid", template="Rigid3d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
-                           ExportForces=False, fileName="monitor_strain2rigid")
+                           ExportForces=False, fileName="monitor_strain2rigidA")
     
 
     return root

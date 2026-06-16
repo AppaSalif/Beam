@@ -9,7 +9,7 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 
 stiffness_param: float = 1e10
-v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
+v_damping_param: float = 1. # Damping parameter for dynamics
 nb_section: int = 10
 beam_length: float = 1.0
 beam_radius: float = 0.01

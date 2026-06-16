@@ -243,6 +243,7 @@ EI = E * I
 # plt.ylabel("y [m]")
 # plt.title("Profil de la poutre test A")
 # plt.grid()
+# plt.savefig("f2s_test_A_profile.png")
 # plt.show()
 
 
@@ -266,6 +267,86 @@ EI = E * I
 # plt.ylabel("y [m]")
 # plt.title("Profil de la poutre test B")
 # plt.grid()
+# plt.savefig("f2s_test_B_profile.png")
+# plt.show()
+
+
+# ## Test C
+
+# data_testC = np.loadtxt("test_C_profile.txt")
+
+# x_testC = data_testC[0:, 1]
+# y_testC = data_testC[0:, 2]
+
+# data_sofa_testC = lire_monitor_sofa("f2s_test_C_profile.txt", beam_length=L, nb_section=nb_section)
+
+# pos_testC = data_sofa_testC[len(data_sofa_testC)-1]["pos"]
+# x_sofa_testC = pos_testC[:, 0]
+# y_sofa_testC = pos_testC[:, 1]
+
+# plt.plot(x_sofa_testC, y_sofa_testC, 'o--', linewidth=2, label="F2S")
+# plt.plot(x_testC, y_testC, 'x-', label="Analytique")
+# plt.legend()
+# plt.xlabel("x [m]")
+# plt.ylabel("y [m]")
+# plt.title("Profil de la poutre test C")
+# plt.grid()
+# plt.savefig("f2s_test_C_profile.png")
+# plt.show()
+
+
+
+####################
+####################
+## Pour le S2R
+####################
+####################
+
+
+# ## Test A
+# data_testA = np.loadtxt("test_A_profile.txt")
+
+# x_testA = data_testA[0:, 1]
+# y_testA = data_testA[0:, 2]
+
+# data_sofa_testA = lire_monitor_sofa("s2r_test_A_profile.txt", beam_length=L, nb_section=nb_section)
+
+# pos_testA = data_sofa_testA[len(data_sofa_testA)-1]["pos"]
+# x_sofa_testA = pos_testA[:, 0]
+# y_sofa_testA = pos_testA[:, 1]
+
+# plt.plot(x_sofa_testA, y_sofa_testA, 'o--', linewidth=2, label="S2R")
+# plt.plot(x_testA, y_testA, 'x-', label="Analytique")
+# plt.legend()
+# plt.xlabel("x [m]")
+# plt.ylabel("y [m]")
+# plt.title("Profil de la poutre test A")
+# plt.grid()
+# plt.savefig("s2r_test_A_profile.png")
+# plt.show()
+
+
+# # Test B
+
+# data_testB = np.loadtxt("test_B_profile.txt")
+
+# x_testB = data_testB[0:, 1]
+# y_testB = data_testB[0:, 2]
+
+# data_sofa_testB = lire_monitor_sofa("s2r_test_B_profile.txt", beam_length=L, nb_section=nb_section)
+
+# pos_testB = data_sofa_testB[len(data_sofa_testB)-1]["pos"]
+# x_sofa_testB = pos_testB[:, 0]
+# y_sofa_testB = pos_testB[:, 1]
+
+# plt.plot(x_sofa_testB, y_sofa_testB, 'o--', linewidth=2, label="S2R")
+# plt.plot(x_testB, y_testB, 'x-', label="Analytique")
+# plt.legend()
+# plt.xlabel("x [m]")
+# plt.ylabel("y [m]")
+# plt.title("Profil de la poutre test B")
+# plt.grid()
+# plt.savefig("s2r_test_B_profile.png")
 # plt.show()
 
 
@@ -276,17 +357,19 @@ data_testC = np.loadtxt("test_C_profile.txt")
 x_testC = data_testC[0:, 1]
 y_testC = data_testC[0:, 2]
 
-data_sofa_testC = lire_monitor_sofa("f2s_test_C_profile.txt", beam_length=L, nb_section=nb_section)
+data_sofa_testC = lire_monitor_sofa("s2r_test_C_profile.txt", beam_length=L, nb_section=nb_section)
 
 pos_testC = data_sofa_testC[len(data_sofa_testC)-1]["pos"]
 x_sofa_testC = pos_testC[:, 0]
 y_sofa_testC = pos_testC[:, 1]
 
-plt.plot(x_sofa_testC, y_sofa_testC, 'o--', linewidth=2, label="F2S")
+plt.plot(x_sofa_testC, y_sofa_testC, 'o--', linewidth=2, label="S2R")
 plt.plot(x_testC, y_testC, 'x-', label="Analytique")
 plt.legend()
 plt.xlabel("x [m]")
 plt.ylabel("y [m]")
 plt.title("Profil de la poutre test C")
 plt.grid()
+plt.savefig("s2r_test_C_profile.png")
 plt.show()
+

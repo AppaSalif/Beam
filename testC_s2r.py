@@ -1,7 +1,6 @@
-import numpy as np
 import os
 import sys
-
+import numpy as np
 # Add the python package to the path
 sys.path.insert(0, os.path.expanduser('~/sofa/plugins/Cosserat/python'))
 
@@ -16,9 +15,10 @@ beam_radius: float = 0.01
 youngModulus: float = 1e6
 poissonRatio: float = 0.38
 
+
 I = np.pi * beam_radius**4 / 4
 
-M0 = np.pi * youngModulus * I / beam_length 
+F_large = 3.0 * youngModulus * I / beam_length**2
 
 def createScene(root):
     """Create a Cosserat beam scene with forces and dynamics."""
@@ -34,15 +34,13 @@ def createScene(root):
     root.addObject('RequiredPlugin', pluginName='Sofa.Component.Constraint.Projective') # Needed to use components [FixedProjectiveConstraint]
     root.addObject("RequiredPlugin", pluginName="SofaValidation")
     root.addObject('RequiredPlugin', name='Sofa.Component.MechanicalLoad') # Needed to use components [ConstantForceField] 
-    
-    
+
     # Configure scene
     root.addObject(
         "VisualStyle",
         displayFlags="showBehaviorModels showCollisionModels showMechanicalMappings",
     )
     root.addObject("DefaultAnimationLoop")
-
 
     root.dt = 1e-2
 
@@ -57,7 +55,7 @@ def createScene(root):
                      vdamping=v_damping_param
                      )
     
-    solver.addObject("CGLinearSolver", iterations=1000, tolerance=1e-14, threshold=1e-14)
+    solver.addObject("SparseLDLSolver")
 
     beam_geometry_params = BeamGeometryParameters(
         beam_length=beam_length,
@@ -90,25 +88,11 @@ def createScene(root):
         points="0",
         template="Rigid3d",
     )
-    
-    ## frame node
-    frame_node = solver.addChild("frame_node")
-    frames_mo = frame_node.addObject(
-        "MechanicalObject",
-        template="Rigid3d",
-        name="FramesMO",
-        position=beam_geometry.frames,  # Use geometry data
-        showIndices=1,
-        showObject=1,
-        showObjectScale=0.8,
-    )
-    frame_node.addObject("FixedProjectiveConstraint", indices="0")
-    
-    frame_node.addObject("ConstantForceField", indices="10", forces=[0, 0, 0, 0, 0, M0])
+
 
     ## bending node
-    custom_bending_states = [[0, 0, 0, 1, 0, 0] for _ in range(nb_section)]
-    strain_node = frame_node.addChild("strain_node")
+    custom_bending_states = [[0, 0, 0, 0, 0, 0] for _ in range(nb_section)]
+    strain_node = solver.addChild("strain_node")
 
     strain_node.addObject(
         "MechanicalObject",
@@ -116,6 +100,7 @@ def createScene(root):
         name="cosserat_state",
         position=custom_bending_states,
     )
+
     strain_node.addObject(
         "BeamHookeLawForceField",
         crossSectionShape="circular",
@@ -125,24 +110,41 @@ def createScene(root):
         poissonRatio=poissonRatio,
     )
 
-    strain_node.addObject(
-    "Frames2StrainCosseratMapping", 
+    
+    ## frame node
+    frame_node = rigid_base.addChild("frame_node")
+    strain_node.addChild(frame_node)
+
+    frames_mo = frame_node.addObject(
+        "MechanicalObject",
+        template="Rigid3d",
+        name="FramesMO",
+        position=beam_geometry.frames,  # Use geometry data
+        showIndices=1,
+        showObject=1,
+        showObjectScale=0.8,
+    )
+    
+    frame_node.addObject("ConstantForceField", indices="10", forces=[0, -F_large, 0, 0, 0, 0])
+
+    frame_node.addObject(
+    "Strain2RigidCosseratMapping", 
     curv_abs_input=beam_geometry.curv_abs_sections, 
     curv_abs_output=beam_geometry.curv_abs_frames, 
     name="cosseratMapping",
-    input1=frame_node.getLinkPath(), 
+    input1=strain_node.cosserat_state.getLinkPath(),
     input2=rigid_base.cosserat_base_mo.getLinkPath(), 
-    output=strain_node.cosserat_state.getLinkPath(), 
+    output=frames_mo.getLinkPath(),
     debug=0,
     radius=beam_radius, 
-    color=[0., 1., 0., 0.5], #green   
+    color=[1., 0., 0., 0.5], #red   
     )
 
 
-    frame_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Rigid3d", 
+    frame_node.addObject("Monitor", name="Monitor_Strain2Rigid", template="Rigid3d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
-                           ExportForces=False, fileName="monitor_frames2strainB")
+                           ExportForces=False, fileName="monitor_strain2rigidC")
     
 
     return root
