@@ -31,8 +31,6 @@ from scipy.integrate import solve_bvp
 from readData import lire_donnees_tige, lire_monitor_sofa
 
 nb_section = 10
-beam_length = 1
-
 
 L = 1.0                       # longueur [m]
 radius = 0.01                 # rayon section circulaire [m]
@@ -40,7 +38,7 @@ E = 1.0e6                      # module de Young [Pa]
 I = np.pi * radius**4 / 4.0    # moment d'inertie de section [m^4]
 EI = E * I
  
-# print(f"EI = {EI:.6e} N.m^2")
+# # print(f"EI = {EI:.6e} N.m^2")
  
  
 
@@ -352,24 +350,24 @@ EI = E * I
 
 ## Test C
 
-data_testC = np.loadtxt("test_C_profile.txt")
+# data_testC = np.loadtxt("test_C_profile.txt")
 
-x_testC = data_testC[0:, 1]
-y_testC = data_testC[0:, 2]
+# x_testC = data_testC[0:, 1]
+# y_testC = data_testC[0:, 2]
 
-data_sofa_testC = lire_monitor_sofa("s2r_test_C_profile.txt", beam_length=L, nb_section=nb_section)
+# data_sofa_testC = lire_monitor_sofa("s2r_test_C_profile.txt", beam_length=L, nb_section=nb_section)
 
-pos_testC = data_sofa_testC[len(data_sofa_testC)-1]["pos"]
-x_sofa_testC = pos_testC[:, 0]
-y_sofa_testC = pos_testC[:, 1]
+# pos_testC = data_sofa_testC[len(data_sofa_testC)-1]["pos"]
+# x_sofa_testC = pos_testC[:, 0]
+# y_sofa_testC = pos_testC[:, 1]
 
-plt.plot(x_sofa_testC, y_sofa_testC, 'o--', linewidth=2, label="S2R")
-plt.plot(x_testC, y_testC, 'x-', label="Analytique")
-plt.legend()
-plt.xlabel("x [m]")
-plt.ylabel("y [m]")
-plt.title("Profil de la poutre test C")
-plt.grid()
-plt.savefig("s2r_test_C_profile.png")
-plt.show()
+# plt.plot(x_sofa_testC, y_sofa_testC, 'o--', linewidth=2, label="S2R")
+# plt.plot(x_testC, y_testC, 'x-', label="Analytique")
+# plt.legend()
+# plt.xlabel("x [m]")
+# plt.ylabel("y [m]")
+# plt.title("Profil de la poutre test C")
+# plt.grid()
+# plt.savefig("s2r_test_C_profile.png")
+# plt.show()
 

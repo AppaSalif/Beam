@@ -9,7 +9,7 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
-nb_section: int = 10
+nb_section: int = 1024
 beam_length: float = 1.0
 beam_radius: float = 0.01
 youngModulus: float = 1e6
@@ -38,7 +38,7 @@ def createScene(root):
     )
     root.addObject("DefaultAnimationLoop")
 
-    root.dt = 1e-2
+    root.dt = 1e-4
 
     # Configure time integration and solver
 
@@ -51,7 +51,7 @@ def createScene(root):
                      vdamping=v_damping_param
                      )
     
-    solver.addObject("SparseLDLSolver")
+    solver.addObject("SparseLDLSolver", template="CompressedRowSparseMatrixd")
 
     beam_geometry_params = BeamGeometryParameters(
         beam_length=beam_length,
@@ -122,7 +122,7 @@ def createScene(root):
     )
     
     F_small = 1e-3
-    frame_node.addObject("ConstantForceField", indices="10", forces=[0, -F_small, 0, 0, 0, 0])
+    frame_node.addObject("ConstantForceField", indices="1024", forces=[0, -F_small, 0, 0, 0, 0])
 
     frame_node.addObject(
     "Strain2RigidCosseratMapping", 
