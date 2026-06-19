@@ -9,7 +9,7 @@ from cosserat import BeamGeometryParameters, CosseratGeometry
 
 stiffness_param: float = 1e10
 v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
-nb_section: int = 10
+nb_section: int = 128
 beam_length: float = 1.0
 beam_radius: float = 0.01
 youngModulus: float = 1e6
@@ -125,7 +125,7 @@ def createScene(root):
         showObjectScale=0.8,
     )
     
-    frame_node.addObject("ConstantForceField", indices="10", forces=[0, 0, 0, 0, 0, M0])
+    frame_node.addObject("ConstantForceField", indices="128", forces=[0, 0, 0, 0, 0, M0])
 
     frame_node.addObject(
     "Strain2RigidCosseratMapping", 

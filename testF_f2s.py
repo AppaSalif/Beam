@@ -1,26 +1,28 @@
-import numpy as np
+
 import os
 import sys
-
+import numpy as np
 # Add the python package to the path
 sys.path.insert(0, os.path.expanduser('~/sofa/plugins/Cosserat/python'))
 
 from cosserat import BeamGeometryParameters, CosseratGeometry
 
-
 stiffness_param: float = 1e10
-v_damping_param: float = 1. #3e-1  # Damping parameter for dynamics
-nb_section: int = 128
+v_damping_param: float = 1. # Damping parameter for dynamics
+nb_section: int = 8
 beam_length: float = 1.0
 beam_radius: float = 0.01
-youngModulus: float = 1e6
-poissonRatio: float = 0.38
+youngModulus: float = 10e6 # Caoutchouc
+rho: float = 1200 # Caoutchouc
+poissonRatio: float = 0.49
 
-I = np.pi * beam_radius**4 / 4
+A: float = np.pi * beam_radius**2
+I: float = np.pi * beam_radius**4 / 4
+EI: float = youngModulus * I
+beam_mass: float = rho * A * beam_length
 
 M0 = np.pi * youngModulus * I / beam_length 
 
-print(M0)
 
 def createScene(root):
     """Create a Cosserat beam scene with forces and dynamics."""
@@ -36,8 +38,7 @@ def createScene(root):
     root.addObject('RequiredPlugin', pluginName='Sofa.Component.Constraint.Projective') # Needed to use components [FixedProjectiveConstraint]
     root.addObject("RequiredPlugin", pluginName="SofaValidation")
     root.addObject('RequiredPlugin', name='Sofa.Component.MechanicalLoad') # Needed to use components [ConstantForceField] 
-    
-    
+
     # Configure scene
     root.addObject(
         "VisualStyle",
@@ -46,7 +47,8 @@ def createScene(root):
     root.addObject("DefaultAnimationLoop")
 
 
-    root.dt = 1e-4
+    root.dt = 1e-2
+    root.gravity = [0, -9.81, 0]
 
     # Configure time integration and solver
 
@@ -59,7 +61,7 @@ def createScene(root):
                      vdamping=v_damping_param
                      )
     
-    solver.addObject("SparseLDLSolver", template="CompressedRowSparseMatrixd")
+    solver.addObject("SparseLDLSolver", template="CompressedRowSparseMatrixMat3x3d")
 
     beam_geometry_params = BeamGeometryParameters(
         beam_length=beam_length,
@@ -104,9 +106,11 @@ def createScene(root):
         showObject=1,
         showObjectScale=0.8,
     )
-    frame_node.addObject("FixedProjectiveConstraint", indices="0")
+    frame_node.addObject("FixedProjectiveConstraint", indices=0)
+    frame_node.addObject("UniformMass", totalMass=beam_mass)
     
-    frame_node.addObject("ConstantForceField", indices="128", forces=[0, 0, 0, 0, 0, M0])
+    frame_node.addObject("ConstantForceField", indices="8", forces=[0, 0, 0, 0, 0, M0])
+
 
     ## bending node
     custom_bending_states = [[0, 0, 0, 1, 0, 0] for _ in range(nb_section)]
@@ -136,7 +140,7 @@ def createScene(root):
     input2=rigid_base.cosserat_base_mo.getLinkPath(), 
     output=strain_node.cosserat_state.getLinkPath(), 
     debug=0,
-    radius=beam_radius, 
+    radius=0.5, 
     color=[0., 1., 0., 0.5], #green   
     )
 
@@ -144,7 +148,7 @@ def createScene(root):
     frame_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Rigid3d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
-                           ExportForces=False, fileName="monitor_frames2strainB")
+                           ExportForces=False, fileName="monitor_frames2strainF")
     
 
     return root
