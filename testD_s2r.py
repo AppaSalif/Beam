@@ -1,4 +1,3 @@
-
 import os
 import sys
 import numpy as np
@@ -6,6 +5,7 @@ import numpy as np
 sys.path.insert(0, os.path.expanduser('~/sofa/plugins/Cosserat/python'))
 
 from cosserat import BeamGeometryParameters, CosseratGeometry
+
 
 
 stiffness_param: float = 1e10
@@ -44,9 +44,7 @@ def createScene(root):
     )
     root.addObject("DefaultAnimationLoop")
 
-
     root.dt = 1e-2
-    root.gravity = [0, -9.81, 0]
 
     # Configure time integration and solver
 
@@ -59,7 +57,7 @@ def createScene(root):
                      vdamping=v_damping_param
                      )
     
-    solver.addObject("SparseLDLSolver", template="CompressedRowSparseMatrixMat3x3d")
+    solver.addObject("CGLinearSolver", iterations=1000, tolerance=1e-12, threshold=1e-12)
 
     beam_geometry_params = BeamGeometryParameters(
         beam_length=beam_length,
@@ -82,34 +80,22 @@ def createScene(root):
         showObject=True,
         showObjectScale="0.1",
     )
-    rigid_base.addObject(
-        "RestShapeSpringsForceField",
-        name="spring",
-        stiffness=stiffness_param,
-        angularStiffness=stiffness_param,
-        external_points="0",
-        mstate="@cosserat_base_mo",
-        points="0",
-        template="Rigid3d",
-    )
-    
-    ## frame node
-    frame_node = solver.addChild("frame_node")
-    frames_mo = frame_node.addObject(
-        "MechanicalObject",
-        template="Rigid3d",
-        name="FramesMO",
-        position=beam_geometry.frames,  # Use geometry data
-        showIndices=1,
-        showObject=1,
-        showObjectScale=0.8,
-    )
-    frame_node.addObject("FixedProjectiveConstraint", indices=0)
-    frame_node.addObject("UniformMass", totalMass=beam_mass)
+    # rigid_base.addObject(
+    #     "RestShapeSpringsForceField",
+    #     name="spring",
+    #     stiffness=stiffness_param,
+    #     angularStiffness=stiffness_param,
+    #     external_points="0",
+    #     mstate="@cosserat_base_mo",
+    #     points="0",
+    #     template="Rigid3d",
+    # )
+    rigid_base.addObject("FixedProjectiveConstraint", indices=0)
+
 
     ## bending node
-    custom_bending_states = [[0, 0, 0, 1, 0, 0] for _ in range(nb_section)]
-    strain_node = frame_node.addChild("strain_node")
+    custom_bending_states = [[0, 0, 0, 0, 0, 0] for _ in range(nb_section)]
+    strain_node = solver.addChild("strain_node")
 
     strain_node.addObject(
         "MechanicalObject",
@@ -117,6 +103,7 @@ def createScene(root):
         name="cosserat_state",
         position=custom_bending_states,
     )
+
     strain_node.addObject(
         "BeamHookeLawForceField",
         crossSectionShape="circular",
@@ -126,24 +113,42 @@ def createScene(root):
         poissonRatio=poissonRatio,
     )
 
-    strain_node.addObject(
-    "Frames2StrainCosseratMapping", 
+    
+    ## frame node
+    frame_node = rigid_base.addChild("frame_node")
+    strain_node.addChild(frame_node)
+
+    frames_mo = frame_node.addObject(
+        "MechanicalObject",
+        template="Rigid3d",
+        name="FramesMO",
+        position=beam_geometry.frames,  # Use geometry data
+        showIndices=1,
+        showObject=1,
+        showObjectScale=0.8,
+    )
+    
+    # frame_node.addObject("FixedProjectiveConstraint", indices=0)
+    frame_node.addObject("UniformMass", totalMass=beam_mass)
+
+    frame_node.addObject(
+    "Strain2RigidCosseratMapping", 
     curv_abs_input=beam_geometry.curv_abs_sections, 
     curv_abs_output=beam_geometry.curv_abs_frames, 
     name="cosseratMapping",
-    input1=frame_node.getLinkPath(), 
+    input1=strain_node.cosserat_state.getLinkPath(),
     input2=rigid_base.cosserat_base_mo.getLinkPath(), 
-    output=strain_node.cosserat_state.getLinkPath(), 
+    output=frames_mo.getLinkPath(),
     debug=0,
-    radius=0.5, 
-    color=[0., 1., 0., 0.5], #green   
+    radius=beam_radius, 
+    color=[1., 0., 0., 0.5], #red   
     )
 
 
-    frame_node.addObject("Monitor", name="Monitor_Frames2Strain", template="Rigid3d", 
+    frame_node.addObject("Monitor", name="Monitor_Strain2Rigid", template="Rigid3d", 
                            listening=True, indices=indices_str, showPositions=True, 
                            ExportPositions=True, ExportVelocities=False, 
-                           ExportForces=False, fileName="monitor_frames2strainD")
+                           ExportForces=False, fileName="monitor_strain2rigidD")
     
 
     return root
